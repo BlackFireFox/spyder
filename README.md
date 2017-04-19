@@ -1,6 +1,7 @@
 <center><h1>Spyder</h1></center>
 
-This is a FreeWare developed by [Black_FireFox](https://github.com/BlackFireFox).
+This is a FreeWare developed by [Black_FireFox](https://github.com/BlackFireFox).<br>
+The word "<b><i>spyder</i></b>" comes from the union of "<b><i>python</i></b>" and "<b><i>spider</i></b>"
 
 ***
 
