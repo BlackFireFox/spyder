@@ -14,12 +14,14 @@ sudo make uninstall
 
 ### Usage
 
-* #### If already installed
+<ul>
+<li><h4>If already installed</h4></li>
 <p style="margin-left:30px">spyder</p>
-* #### Else
+<li><h4>Else</h4></li>
 <pre style="margin-left:30px">python spyder</pre>
 <p style="margin-left:30px">or</p>
 <pre style="margin-left:30px">./spyder</pre>
+</ul>
 
 ***
 
