@@ -78,36 +78,25 @@ try:
 	print "--------"
 	site=urllib.urlopen(link)
 	page=site.read()
-	page=page.replace("\n","").replace("\r","").replace("    ","").replace(" ","\n")
+	page=page.replace("\n","").replace("\r","").replace("    ","").replace(" ","\n").replace("<","\n").replace(">","\n")
 	body=re.findall(r'<body>(.*?)</body>',page)
 	allmail=''
 	#if "@" in body: don't work
 	if "@" in page:
 		for line in page.splitlines():
 			if "@" in line:
-				if "<" or ">" or "/" in line:
-					nn=re.findall(r'<(.*?)>',line)
-					num=0
-					nns=''
-					while num<len(nn):
-						nns=nn[num]
-						line=line.replace(nns,"")
-						num=num+1
-					line=line.replace("<","").replace(">","").replace("/","")
-					if "." in line:
-						print bcolors.BOLD+bcolors.OKGREEN+"*"+bcolors.ENDC,line
-						if allmail=="":
-							allmail=line
-						else:
-							allmail=allmail+"\n"+line
+				if "." in line:
+					print bcolors.BOLD+bcolors.OKGREEN+"*"+bcolors.ENDC,line
+					if allmail=="":
+						allmail=line
 					else:
-						print bcolors.BOLD+bcolors.FAIL+"*"+bcolors.ENDC,line
-				else:
-					if "." in line:
-						print bcolors.BOLD+bcolors.OKGREEN+"*"+bcolors.ENDC,line
 						allmail=allmail+"\n"+line
-					else:
-						print bcolors.BOLD+bcolors.FAIL+"*"+bcolors.ENDC,line
+				else:
+					print bcolors.BOLD+bcolors.FAIL+"*"+bcolors.ENDC,line
+		print "--------"
+		mailnum=0
+		for line in allmail:
+			++mailnum
 		print "--------"
 		if allmail!='':
 			answer=raw_input("Save in a file? [y or n]: ")

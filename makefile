@@ -7,3 +7,8 @@ install:
 
 uninstall:
 	rm $(pre)spyder
+
+reinstall:
+	rm $(pre)spyder
+	cp spyder $(pre)spyder
+	chmod +x $(pre)spyder
