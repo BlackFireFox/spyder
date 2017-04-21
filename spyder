@@ -8,7 +8,7 @@
 # ##### #       #   ##### ##### #   # #
 #                                     #
 #######################################
-# read README.md                      #
+# v0.1.1                              #
 #######################################
 import urllib,re,os,urllib2,sys
 
@@ -75,12 +75,23 @@ print "Verifing..."
 try:
 	urllib2.urlopen(link)
 	print bcolors.OKGREEN+bcolors.BOLD+"Ok"+bcolors.ENDC
+	##future feature	
+	while True:
+		fwl=raw_input("Follow link? [y or n]: ")
+		if fwl=="y" or fwl=="yes":
+			print "Follow."
+			break
+		elif fwl=="n" or fwl=="no":
+			print "No follow."
+			break
 	print "--------"
 	site=urllib.urlopen(link)
 	page=site.read()
 	page=page.replace("\n","").replace("\r","").replace("    ","").replace(" ","\n").replace("<","\n").replace(">","\n")
 	body=re.findall(r'<body>(.*?)</body>',page)
 	allmail=''
+	mailnum=0
+	hf=''
 	#if "@" in body: don't work
 	if "@" in page:
 		for line in page.splitlines():
@@ -89,14 +100,32 @@ try:
 					print bcolors.BOLD+bcolors.OKGREEN+"*"+bcolors.ENDC,line
 					if allmail=="":
 						allmail=line
+						mailnum=1
 					else:
 						allmail=allmail+"\n"+line
+						mailnum+=1
 				else:
 					print bcolors.BOLD+bcolors.FAIL+"*"+bcolors.ENDC,line
+			elif "href=" in line:
+				##future feature
+				if fwl=="y" or fwl=="yes":
+					if '"' in line:
+						lt=re.findall(r'(".*?")',line)
+						try:
+							hf=lt[0].replace('"','')
+						except:
+							print "Error"
+					elif "'" in line:
+						lt=re.findall(r"('.*?')",line)
+						try:
+							hf=hf+lt[0].replace("'","")+"\n"
+						except:
+							hflog+=e.code
 		print "--------"
-		mailnum=0
-		for line in allmail:
-			++mailnum
+		print mailnum,"valid e-mail."
+		print "--------"
+		##future feature
+		print hf
 		print "--------"
 		if allmail!='':
 			answer=raw_input("Save in a file? [y or n]: ")
@@ -116,7 +145,22 @@ try:
 						print "No save."
 						sys.exit()
 	else:
-		print 'Failure.'
+		print "No mail."
+		if "href=" in page:
+			if fwl=="y" or fwl=="yes":
+				for line in page.splitlines():
+					if '"' in line:
+						lt=re.findall(r'(".*?")',line)
+						try:
+							hf=lt[0].replace('"','')
+						except:
+							print "Error"
+					elif "'" in line:
+						lt=re.findall(r"('.*?')",line)
+						try:
+							hf=hf+lt[0].replace("'","")+"\n"
+						except:
+							hflog+=e.code
 except urllib2.HTTPError, e:
 	print bcolors.FAIL+bcolors.BOLD+"Error:"+bcolors.ENDC
 	if e.code==404:
