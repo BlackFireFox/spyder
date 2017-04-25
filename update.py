@@ -39,6 +39,8 @@ try:
 							try:
 								print "Update..."
 								os.system("git clone https://github.com/BlackFireFox/spyder temp && cd temp/ && mv ../temp/* .. && rm -rf ../temp && make reinstall")
+								print "(If reinstall not completed, type:)"
+								print "sudo make reinstall"
 								print "Completed."
 							except:
 								print "Git not installed."
