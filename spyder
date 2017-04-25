@@ -8,9 +8,23 @@
 # ##### #       #   ##### ##### #   # #
 #                                     #
 #######################################
-# v0.1.1                              #
+# v0.1.2                              #
 #######################################
 import urllib,re,os,urllib2,sys
+
+def host(url):
+	surl=url.replace("/","\n")
+	num=1
+	for line in surl.splitlines():
+		if num==1:
+			hostname=line
+			num+=1
+		elif num==3:
+			hostname=hostname+"//"+line
+			break
+		else:
+			num+=1
+	return hostname
 
 def save(fl):
 	while True:
@@ -75,7 +89,6 @@ print "Verifing..."
 try:
 	urllib2.urlopen(link)
 	print bcolors.OKGREEN+bcolors.BOLD+"Ok"+bcolors.ENDC
-	##future feature	
 	while True:
 		fwl=raw_input("Follow link? [y or n]: ")
 		if fwl=="y" or fwl=="yes":
@@ -106,28 +119,108 @@ try:
 						mailnum+=1
 				else:
 					print bcolors.BOLD+bcolors.FAIL+"*"+bcolors.ENDC,line
-			elif "href=" in line:
-				##future feature
-				if fwl=="y" or fwl=="yes":
+		if fwl=="y" or fwl=="yes":
+			print "--------"
+			for line in page.splitlines():
+				if "href=" in line:
 					if '"' in line:
 						lt=re.findall(r'(".*?")',line)
 						try:
-							hf=lt[0].replace('"','')
+							hf=hf+lt[0].replace('"','')+"\n"
+							print bcolors.BOLD+bcolors.OKBLUE+"*"+bcolors.ENDC,lt[0].replace('"','')
 						except:
-							print "Error"
+							print bcolors.BOLD+bcolors.WARNING+"*"+bcolors.ENDC,"Error"
 					elif "'" in line:
 						lt=re.findall(r"('.*?')",line)
 						try:
 							hf=hf+lt[0].replace("'","")+"\n"
+							print bcolors.BOLD+bcolors.OKBLUE+"*"+bcolors.ENDC,lt[0].replace("'","")
 						except:
-							hflog+=e.code
+							print bcolors.BOLD+bcolors.WARNING+"*"+bcolors.ENDC,"Error"
 		print "--------"
 		print mailnum,"valid e-mail."
 		print "--------"
-		##future feature
-		print hf
-		print "--------"
+		if hf!="":
+			hfn=0
+			for line in hf.splitlines():
+				hfn+=1
+			print hfn,"valid link."
+			print "--------"
+			surl=link.replace("/","\n")
+			num=1
+			for line in surl.splitlines():
+				if num==1:
+					hostname=line
+					num+=1
+				elif num==3:
+					hostname=hostname+"//"+line
+					break
+				else:
+					num+=1
+			for line in hf.splitlines():
+				if "http" in line:
+					url=line
+				else:
+					url=hostname+line
+				site=urllib.urlopen(url)
+				page=site.read()
+				page=page.replace("\n","").replace("\r","").replace("    ","").replace(" ","\n").replace("<","\n").replace(">","\n")
+				if "@" in page:
+					for line in page.splitlines():
+						if "@" in line:
+							if "." in line:
+								print bcolors.BOLD+bcolors.OKGREEN+"*"+bcolors.ENDC,line
+								if allmail=="":
+									allmail=line
+									mailnum=1
+								else:
+									allmail=allmail+"\n"+line
+									mailnum+=1
+							else:
+								print bcolors.BOLD+bcolors.FAIL+"*"+bcolors.ENDC,line
+					if fwl=="y" or fwl=="yes":
+						print "--------"
+						for line in page.splitlines():
+							if "href=" in line:
+								if '"' in line:
+									lt=re.findall(r'(".*?")',line)
+									try:
+										hf=hf+lt[0].replace('"','')+"\n"
+										print bcolors.BOLD+bcolors.OKGREEN+"*"+bcolors.ENDC,lt[0].replace('"','')
+									except:
+										print bcolors.BOLD+bcolors.FAIL+"*"+bcolors.ENDC,"Error"
+								elif "'" in line:
+									lt=re.findall(r"('.*?')",line)
+									try:
+										hf=hf+lt[0].replace("'","")+"\n"
+										print bcolors.BOLD+bcolors.OKGREEN+"*"+bcolors.ENDC,lt[0].replace("'","")
+									except:
+										print bcolors.BOLD+bcolors.FAIL+"*"+bcolors.ENDC,"Error"
+			print mailnum,"valid e-mail."
+			print "--------"
 		if allmail!='':
+			temp=""
+			print "Removing duplicate..."
+			for line in allmail.splitlines():
+				allmail=allmail.replace(line,"")
+				allmail=allmail+"\n"+line
+				print bcolors.BOLD+bcolors.OKGREEN+"*"+bcolors.ENDC,line
+			for line in allmail.splitlines():
+				if re.match(r'^\s*$', line):
+					print "Loading..."
+				else:
+					if temp=="":
+						temp=line
+					else:
+						temp=temp+"\n"+line
+					print bcolors.BOLD+bcolors.OKGREEN+"*"+bcolors.ENDC,line
+			allmail=temp
+			mailnum=0
+			for line in allmail.splitlines():
+				mailnum+=1
+			print "--------"
+			print mailnum,"valid e-mail."
+			print "--------"
 			answer=raw_input("Save in a file? [y or n]: ")
 			if answer=="y" or answer=="yes":
 				fl=raw_input("Where to save?: ")
@@ -145,22 +238,121 @@ try:
 						print "No save."
 						sys.exit()
 	else:
-		print "No mail."
-		if "href=" in page:
-			if fwl=="y" or fwl=="yes":
-				for line in page.splitlines():
-					if '"' in line:
-						lt=re.findall(r'(".*?")',line)
-						try:
-							hf=lt[0].replace('"','')
-						except:
-							print "Error"
-					elif "'" in line:
-						lt=re.findall(r"('.*?')",line)
-						try:
-							hf=hf+lt[0].replace("'","")+"\n"
-						except:
-							hflog+=e.code
+		if fwl=="y" or fwl=="yes":
+			if "href=" in page:
+				if fwl=="y" or fwl=="yes":
+					for line in page.splitlines():
+						if "href=" in line:
+							if '"' in line:
+								lt=re.findall(r'(".*?")',line)
+								try:
+									hf=hf+lt[0].replace('"','')+"\n"
+									print bcolors.BOLD+bcolors.OKBLUE+"*"+bcolors.ENDC,lt[0].replace('"','')
+								except:
+									print bcolors.BOLD+bcolors.WARNING+"*"+bcolors.ENDC,"Error"
+							elif "'" in line:
+								lt=re.findall(r"('.*?')",line)
+								try:
+									hf=hf+lt[0].replace("'","")+"\n"
+									print bcolors.BOLD+bcolors.OKBLUE+"*"+bcolors.ENDC,lt[0].replace("'","")
+								except:
+									print bcolors.BOLD+bcolors.WARNING+"*"+bcolors.ENDC,"Error"
+				if hf!="":
+					surl=link.replace("/","\n")
+					num=1
+					for line in surl.splitlines():
+						if num==1:
+							hostname=line
+							num+=1
+						elif num==3:
+							hostname=hostname+"//"+line
+							break
+						else:
+							num+=1
+					for line in hf.splitlines():
+						if "http" in line:
+							url=line
+						else:
+							url=hostname+line
+						print url
+						site=urllib.urlopen(url)
+						page=site.read()
+						page=page.replace("\n","").replace("\r","").replace("    ","").replace(" ","\n").replace("<","\n").replace(">","\n")
+						if "@" in page:
+							for line in page.splitlines():
+								if "@" in line:
+									if "." in line:
+										print bcolors.BOLD+bcolors.OKGREEN+"*"+bcolors.ENDC,line
+										if allmail=="":
+											allmail=line
+											mailnum=1
+										else:
+											allmail=allmail+"\n"+line
+											mailnum+=1
+									else:
+										print bcolors.BOLD+bcolors.FAIL+"*"+bcolors.ENDC,line
+								print "--------"
+								for line in page.splitlines():
+									if "href=" in line:
+										if '"' in line:
+											lt=re.findall(r'(".*?")',line)
+											try:
+												hf=hf+lt[0].replace('"','')+"\n"
+												print bcolors.BOLD+bcolors.OKGREEN+"*"+bcolors.ENDC,lt[0].replace('"','')
+											except:
+												print bcolors.BOLD+bcolors.FAIL+"*"+bcolors.ENDC,"Error"
+										elif "'" in line:
+											lt=re.findall(r"('.*?')",line)
+											try:
+												hf=hf+lt[0].replace("'","")+"\n"
+												print bcolors.BOLD+bcolors.OKGREEN+"*"+bcolors.ENDC,lt[0].replace("'","")
+											except:
+												print bcolors.BOLD+bcolors.FAIL+"*"+bcolors.ENDC,"Error"
+					print mailnum,"valid e-mail."
+					print "--------"
+				if allmail!='':
+					temp=""
+					print "Removing duplicate..."
+					for line in allmail.splitlines():
+						allmail=allmail.replace(line,"")
+						allmail=allmail+"\n"+line
+						print bcolors.BOLD+bcolors.OKGREEN+"*"+bcolors.ENDC,line
+					for line in allmail.splitlines():
+						if re.match(r'^\s*$', line):
+							print "Loading..."
+						else:
+							if temp=="":
+								temp=line
+							else:
+								temp=temp+"\n"+line
+							print bcolors.BOLD+bcolors.OKGREEN+"*"+bcolors.ENDC,line
+					allmail=temp
+					mailnum=0
+					for line in allmail.splitlines():
+						mailnum+=1
+					print "--------"
+					print mailnum,"valid e-mail."
+					print "--------"
+					answer=raw_input("Save in a file? [y or n]: ")
+					if answer=="y" or answer=="yes":
+						fl=raw_input("Where to save?: ")
+						save(fl)
+					elif answer=="n" or answer=="no":
+						print "No save."
+						sys.exit()
+					else:
+						while True:
+							answer=raw_input("Save in a file? [y or n]: ")
+							if answer=="y" or answer=="yes":
+								fl=raw_input("Where to save?: ")
+								save(fl)
+							elif answer=="n" or answer=="no":
+								print "No save."
+								sys.exit()
+				else:
+					print "No e-mail."
+		else:
+			print "Failure."
 except urllib2.HTTPError, e:
 	print bcolors.FAIL+bcolors.BOLD+"Error:"+bcolors.ENDC
 	if e.code==404:
