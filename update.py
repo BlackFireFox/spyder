@@ -37,6 +37,12 @@ try:
 					if up=="y" or up=="yes":
 						if platform.system()=="Linux":
 							try:
+								os.rename('/etc/python','/etc/pytho')
+								os.rename("/etc/pytho","/etc/python")
+							except:
+								print "You need root permissions."
+								sys.exit()
+							try:
 								print "Update..."
 								os.system("git clone https://github.com/BlackFireFox/spyder temp && cd temp/ && mv ../temp/* .. && rm -rf ../temp && make reinstall")
 								print "Completed."
@@ -48,6 +54,7 @@ try:
 						else:
 							print "Go here for download:"
 							print "https://github.com/BlackFireFox/spyder"
+							sys.exit()
 					elif up=="n" or "no":
 						print "Don't update."
 						sys.exit()
