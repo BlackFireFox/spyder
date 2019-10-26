@@ -16,7 +16,7 @@ for line in code.splitlines():
 		break
 	else:
 		ln=ln+1
-vl="https://raw.githubusercontent.com/BlackFireFox/spyder/master/version.html"
+vl="https://raw.githubusercontent.com/Bytezz/spyder/master/version.html"
 print "Connecting..."
 try:
 	urllib2.urlopen(vl)
@@ -38,18 +38,18 @@ try:
 						if platform.system()=="Linux":
 							try:
 								print "Update..."
-								os.system("git clone https://github.com/BlackFireFox/spyder temp && cd temp/ && mv ../temp/* .. && rm -rf ../temp && make reinstall")
+								os.system("git clone https://github.com/Bytezz/spyder temp && cd temp/ && mv ../temp/* .. && rm -rf ../temp && make reinstall")
 								print "(If reinstall not completed, type:)"
 								print "sudo make reinstall"
 								print "Completed."
 							except:
 								print "Git not installed."
 								print "Go here for download:"
-								print "https://github.com/BlackFireFox/spyder"
+								print "https://github.com/Bytezz/spyder"
 							sys.exit()
 						else:
 							print "Go here for download:"
-							print "https://github.com/BlackFireFox/spyder"
+							print "https://github.com/Bytezz/spyder"
 							sys.exit()
 					elif up=="n" or "no":
 						print "Don't update."
